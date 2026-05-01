@@ -14,30 +14,36 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "${env.MVN_CMD} clean compile"
+                dir('demo') {
+                    sh "${env.MVN_CMD} clean compile"
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh "${env.MVN_CMD} test"
+                dir('demo') {
+                    sh "${env.MVN_CMD} test"
+                }
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit 'demo/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Package') {
             steps {
-                sh "${env.MVN_CMD} package -DskipTests"
+                dir('demo') {
+                    sh "${env.MVN_CMD} package -DskipTests"
+                }
             }
         }
 
         stage('Archive Artifact') {
             steps {
-                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+                archiveArtifacts artifacts: 'demo/target/*.war', fingerprint: true
             }
         }
     }
